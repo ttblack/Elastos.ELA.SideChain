@@ -150,9 +150,10 @@ func (s *HttpService) SubmitAuxBlock(param http.Params) (interface{}, error) {
 
 func (s *HttpService) CreateAuxBlock(param http.Params) (interface{}, error) {
 	addr, _ := param.String("paytoaddress")
-
+	log.Infof("[CreateAuxBlock] int HttpService paytoaddress:%s", addr)
 	msgBlock, curHashStr, _ := s.cfg.PowService.GenerateAuxBlock(addr)
 	if nil == msgBlock {
+		log.Error("GenerateAuxBlock error Hash: %s\n", curHashStr)
 		return nil, newError(UnknownBlock)
 	}
 
@@ -166,6 +167,7 @@ func (s *HttpService) CreateAuxBlock(param http.Params) (interface{}, error) {
 
 	genesisHash, err := s.cfg.Chain.GetBlockHash(uint32(0))
 	if err != nil {
+		log.Errorf("CreateAuxBlock error Hash:%s err=%s\n", genesisHash.String(), err.Error())
 		return nil, http.NewError(int(InvalidParams), "get genesis hash failed")
 	}
 	genesisHashStr := common.BytesToHexString(genesisHash.Bytes())
@@ -180,6 +182,8 @@ func (s *HttpService) CreateAuxBlock(param http.Params) (interface{}, error) {
 		Hash:              curHashStr,
 		PreviousBlockHash: preHashStr,
 	}
+
+	log.Infof("[CreateAuxBlock] int HttpService Success:%s", addr)
 	return SendToAux, nil
 }
 

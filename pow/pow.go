@@ -177,6 +177,7 @@ func (s *Service) GenerateAuxBlock(addr string) (*types.Block, string, bool) {
 
 		msgBlock, err := s.cfg.GenerateBlock(&s.cfg)
 		if nil != err {
+			log.Error("GenerateAuxBlock generate block err", err)
 			return nil, "msgBlock generate err", false
 		}
 
@@ -385,9 +386,11 @@ func NewCoinBaseTransaction(coinBasePayload *types.PayloadCoinBase, currentHeigh
 }
 
 func GenerateBlock(cfg *Config) (*types.Block, error) {
+	log.Info("[GenerateBlock] in sidechain POW ")
 	nextBlockHeight := cfg.Chain.GetBestHeight() + 1
 	coinBaseTx, err := cfg.CreateCoinBaseTx(cfg, nextBlockHeight, cfg.MinerAddr)
 	if err != nil {
+		log.Info("[GenerateBlock] CreateCoinBaseTx error :%s", err)
 		return nil, err
 	}
 
